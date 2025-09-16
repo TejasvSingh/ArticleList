@@ -1,39 +1,53 @@
 import Foundation
 
 protocol ArticleNetwork {
-    func getData(from serverUrl: String, closure: @escaping (Data?) -> Void)
-    func parse(data: Data?) -> News?
+    func getData(from serverUrl: String?, closure: @escaping (NetworkState) -> Void)
+    func parse(data: Data?) -> [ArticleList]
 }
 
 
 class ArticleNetworkManager: ArticleNetwork {
     static let shared = ArticleNetworkManager()
-    private init() {}
+    var state: NetworkState = .isLoading
+     init() {}
 
-    func getData(from serverUrl: String, closure: @escaping (Data?) -> Void) {
-        guard let serverURL = URL(string: serverUrl) else {
-            print("Server URL is invalid")
-            closure(nil)
+    func getData(from serverUrl: String?, closure: @escaping (NetworkState) -> Void) {
+        guard let imageUrl = serverUrl, let serverURL = URL(string: imageUrl) else {
+            state = .invalidURL
+            closure(state)
             return
         }
-
-        URLSession.shared.dataTask(with: serverURL) { data, _, error in
-            if let error = error {
-                print("Error fetching data: \(error)")
-                closure(nil)
+        
+        URLSession.shared.dataTask(with: serverURL) { data, response, error in
+            if let _ = error {
+                self.state = .errorFetchingData
+                closure(self.state)
                 return
             }
-            closure(data)
+            
+            guard let data else {
+                self.state = .noDataFromServer
+                closure(self.state)
+                return
+            }
+            self.state = .success(data)
+            closure(self.state)
         }.resume()
     }
 
-    func parse(data: Data?) -> News? {
-        guard let data = data else { return nil }
-        do {
-            return try JSONDecoder().decode(News.self, from: data)
-        } catch {
-            print("Error parsing JSON: \(error)")
-            return nil
+    func parse(data: Data?) -> [ArticleList] {
+        guard let data = data else {
+            print("No data to parse")
+            return []
         }
+        do {
+            let decoder = JSONDecoder()
+            let fetchedResult = try decoder.decode(News.self, from: data)
+            return fetchedResult.articles
+        } catch {
+            print(error)
+        }
+        return []
     }
+
 }

@@ -108,19 +108,25 @@ extension ArticleListCell {
     
     func configure(with viewModel: ArticleList) {
         imageLabel.image = UIImage(systemName: "photo") // placeholder
-        
-        if let urlString = viewModel.urlToImage,
-           let url = URL(string: urlString) {
-            URLSession.shared.dataTask(with: url) { [weak self] data, _, error in
-                guard let self = self,
-                      let data = data,
-                      error == nil,
-                      let img = UIImage(data: data) else { return }
+        var receivedImageData: Data?
+        ArticleNetworkManager.shared.getData(from: viewModel.urlToImage, closure: { [weak self] fetchedState in
+            guard let self = self else { return }
+            switch fetchedState {
+            case .isLoading, .invalidURL, .errorFetchingData, .noDataFromServer:
                 DispatchQueue.main.async {
-                    self.imageLabel.image = img
+                    self.imageLabel.image = UIImage(systemName: "photo.trianglebadge.exclamationmark.fill")
                 }
-            }.resume()
-        }
+                break
+            case .success(let fetchedData):
+                receivedImageData = fetchedData
+                break
+            }
+            // convert imageData into UIImage
+            DispatchQueue.main.async {
+                guard let receivedImageData = receivedImageData else { return }
+                self.imageLabel.image = UIImage(data: receivedImageData)
+            }
+        })
         
         let fullDate = viewModel.publishedAt
         let onlyDate = fullDate?.split(separator: "T").first.map(String.init) ?? fullDate

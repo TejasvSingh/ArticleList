@@ -12,7 +12,7 @@ protocol ArticleViewModelProtocol {
     var filteredList: [ArticleList] { get set }
     func getArticlesCount() -> Int
     func getArticle(at index: Int) -> ArticleList
-    func getDataFromServer(closure: @escaping (() -> Void))
+    func getDataFromServer(completion: ((NetworkState?) -> Void)?)
     func searchArticles(with query: String)
     func resetSearch()
 }
@@ -21,19 +21,29 @@ class ArticleListViewModel: ArticleViewModelProtocol {
     var article: [ArticleList] = []
     var filteredList: [ArticleList] = []
     var networkManager = ArticleNetworkManager.shared
-    
+    var errorState: NetworkState?
     
     let searchController = UISearchController(searchResultsController: nil)
 
     init() {}
 
-    func getDataFromServer(closure: @escaping (() -> Void)) {
-        networkManager.getData(from: Server.ArticlesEndPoint.rawValue) { [weak self] data in
+    func getDataFromServer(completion: ((NetworkState?) -> Void)?) {
+        networkManager.getData(from: Server.ArticlesEndPoint.rawValue) { [weak self] fetchedState in
             guard let self = self else { return }
-               let fetchedList = self.networkManager.parse(data: data)
-               self.article = fetchedList?.articles ?? []
-               self.filteredList = self.article
-               closure()
+            
+            switch fetchedState {
+            case .isLoading, .invalidURL, .errorFetchingData, .noDataFromServer:
+                errorState = fetchedState
+                break
+            case .success(let fetchedData):
+                self.article = networkManager.parse(data: fetchedData)
+                self.filteredList = article
+                break
+            }
+            
+            DispatchQueue.main.async {
+                completion?(self.errorState)
+            }
         }
     }
 
@@ -62,8 +72,30 @@ class ArticleListViewModel: ArticleViewModelProtocol {
             return authorMatch || descMatch
         }
     }
+    
+    func updateArticleList(row: Int, updatedArticle: ArticleList) {
+        article[row] = updatedArticle
+        filteredList[row] = updatedArticle
+    }
 
     func resetSearch() {
         filteredList = article
+    }
+}
+
+
+extension ArticleListViewModel {
+    var errorMessage: String {
+        guard let errorState = errorState else { return "" }
+        switch errorState {
+        case .invalidURL:
+            return "Invalid URL"
+        case .errorFetchingData:
+            return "Error fetching data"
+        case .noDataFromServer:
+            return "No data from server"
+        default :
+            return ""
+        }
     }
 }

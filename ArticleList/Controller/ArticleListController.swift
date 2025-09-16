@@ -11,17 +11,21 @@ class ArticleListController: UIViewController, UITableViewDataSource, UITableVie
     var tableView = UITableView()
     let viewModel = ArticleListViewModel()
     let searchController = UISearchController(searchResultsController: nil)
-
+    private var coordinatorFlowDelegate: NavigationControllerProtocol?
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchController()
         setupTableView()
 
-        viewModel.getDataFromServer { [weak self] in
-            DispatchQueue.main.async {
-                self?.tableView.reloadData()
+        viewModel.getDataFromServer { [weak self] errorState in
+            guard let self = self else { return }
+            guard let _ = errorState else {
+                self.tableView.reloadData()
+                return
             }
         }
+        
+        coordinatorFlowDelegate = NavigationController( navigationController: navigationController)
     }
 
     func setupTableView() {
@@ -86,5 +90,21 @@ extension ArticleListController {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
-    
 }
+
+extension ArticleListController {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let selectedArticle = viewModel.getArticle(at: indexPath.row)
+        let closure : ((ArticleList?) -> Void)? = { [weak self] updatedArticle in
+            guard let self = self, let updatedArticle = updatedArticle else { return }
+            self.viewModel.updateArticleList(row: indexPath.row, updatedArticle: updatedArticle)
+            DispatchQueue.main.async{
+                self.tableView.reloadRows(at: [indexPath], with: .none)
+            }
+        }
+        coordinatorFlowDelegate?.showDetailScreen(article: selectedArticle, closure: closure)
+    }
+}
+
+
