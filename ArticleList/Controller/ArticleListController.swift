@@ -11,21 +11,60 @@ class ArticleListController: UIViewController, UITableViewDataSource, UITableVie
     var tableView = UITableView()
     let viewModel = ArticleListViewModel()
     let searchController = UISearchController(searchResultsController: nil)
+    var refreshControl = UIRefreshControl()
+    let activityIndicatorView = UIActivityIndicatorView(style: .large)
     private var coordinatorFlowDelegate: NavigationControllerProtocol?
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureSearchController()
         setupTableView()
-
+        view.addSubview(activityIndicatorView)
+        configureSearchController()
+        
+        
+        activityIndicatorView.center = view.center
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate(
+//            [tableView.topAnchor.constraint(equalTo: view.topAnchor),
+//             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+               [ activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                        activityIndicatorView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            ]
+        )
+        activityIndicatorView.startAnimating( )
+        
+        refreshControl.addTarget(self, action: #selector(refresh(sender:)), for: .valueChanged)
+        tableView.refreshControl = refreshControl
         viewModel.getDataFromServer { [weak self] errorState in
             guard let self = self else { return }
-            guard let _ = errorState else {
-                self.tableView.reloadData()
-                return
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.activityIndicatorView.stopAnimating()
+                if let _ = errorState {
+                    self.showAlert(title: "Error", message: self.viewModel.errorMessage)
+                } else {
+                    self.tableView.reloadData()
+                }
             }
         }
         
+        
         coordinatorFlowDelegate = NavigationController( navigationController: navigationController)
+    }
+    
+    @objc func refresh(sender: UIRefreshControl) {
+        activityIndicatorView.startAnimating()
+        viewModel.getDataFromServer { [weak self] errorState in
+            guard let self = self else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.activityIndicatorView.stopAnimating()
+                print("called api")
+                     sender.endRefreshing()
+                     self.tableView.reloadData()
+                 }
+        }
+        
+        
     }
 
     func setupTableView() {
@@ -36,7 +75,9 @@ class ArticleListController: UIViewController, UITableViewDataSource, UITableVie
         tableView.delegate = self
         tableView.estimatedRowHeight = 100
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(ArticleListCell.self, forCellReuseIdentifier: ArticleListCell.reuseIdentifier)
+        
     }
     
     func configureSearchController() {
@@ -46,10 +87,10 @@ class ArticleListController: UIViewController, UITableViewDataSource, UITableVie
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-
+        searchController.searchBar.translatesAutoresizingMaskIntoConstraints = false
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        navigationController?.navigationBar.prefersLargeTitles = true
+      //  navigationController?.navigationBar.prefersLargeTitles = true
         definesPresentationContext = true
     }
     
@@ -69,6 +110,7 @@ class ArticleListController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         UITableView.automaticDimension
     }
+  
 }
 
 

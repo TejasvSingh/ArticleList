@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Article List Controller-->
+        <!--Item-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ArticleListController" customModule="ArticleList" customModuleProvider="target" sceneMemberID="viewController">
@@ -18,11 +18,74 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
+                    <tabBarItem key="tabBarItem" title="Item" id="O4c-ii-Hb4"/>
                     <navigationItem key="navigationItem" id="DvX-Zk-XSj"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1046.5648854961833" y="3.5211267605633805"/>
+            <point key="canvasLocation" x="1352" y="449"/>
+        </scene>
+        <!--Item 2-->
+        <scene sceneID="cES-48-RWY">
+            <objects>
+                <viewController id="rtf-Mo-d1U" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="hrF-dY-KA2">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="ih2-M9-t6h"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Item 2" id="xTz-0s-lxH"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7B1-Jc-JwS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2038" y="36"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="CW1-Wm-CV5">
+            <objects>
+                <viewController id="Hto-Y4-fEh" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="UWz-Cc-C6h">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="W4x-JD-UW1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uqM-a1-bAf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3236" y="-85"/>
+        </scene>
+        <!--Item 1-->
+        <scene sceneID="Kfc-OL-3tW">
+            <objects>
+                <viewController id="ew3-oI-6PU" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="mLu-N0-EZO">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="hpl-LI-tga"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Item 1" id="fnp-jB-pxr"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eFh-T3-EK5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2038" y="-572"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="Gmb-6A-XNp">
+            <objects>
+                <tabBarController id="2SZ-jT-rjO" customClass="TabBarController" customModule="ArticleList" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="3pI-CV-yG8"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="UQs-LG-Jrq">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XpQ-Wm-IU2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1133" y="-269"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="7bV-70-YnX">
@@ -35,12 +98,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="MTz-ew-RKR"/>
+                        <segue destination="2SZ-jT-rjO" kind="relationship" relationship="rootViewController" id="W1j-J9-rNd"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wDw-PT-uiZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="119.84732824427481" y="3.5211267605633805"/>
+            <point key="canvasLocation" x="-940" y="4"/>
         </scene>
     </scenes>
     <resources>

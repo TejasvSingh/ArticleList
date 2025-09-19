@@ -28,7 +28,10 @@ class ArticleListViewModel: ArticleViewModelProtocol {
     init() {}
 
     func getDataFromServer(completion: ((NetworkState?) -> Void)?) {
-        networkManager.getData(from: Server.ArticlesEndPoint.rawValue) { [weak self] fetchedState in
+        
+        networkManager.getData(from: Server.ArticlesEndPoint.rawValue) {
+            
+            [weak self] fetchedState in
             guard let self = self else { return }
             
             switch fetchedState {
