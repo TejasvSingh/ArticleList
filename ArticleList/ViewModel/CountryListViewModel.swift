@@ -13,12 +13,14 @@ protocol CountryListViewModelProtocol : AnyObject {
     var searchController: UISearchController { get }
     func getDataFromServer(completion: ((NetworkState?) -> Void)?)
 }
+
 class CountryListViewModel: CountryListViewModelProtocol {
     var countries: [Country] = []
     var filteredCountries: [Country] = []
     var networkManager = CountryNetworkManager.shared
     var errorState: NetworkState?
     let searchController = UISearchController(searchResultsController: nil)
+    
     init() {}
     
     

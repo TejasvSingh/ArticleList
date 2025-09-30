@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 class ArticleListController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchResultsUpdating, UISearchBarDelegate {
     var tableView = UITableView()
     let viewModel = ArticleListViewModel()
@@ -138,15 +139,30 @@ extension ArticleListController {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectedArticle = viewModel.getArticle(at: indexPath.row)
-        let closure : ((ArticleList?) -> Void)? = { [weak self] updatedArticle in
-            guard let self = self, let updatedArticle = updatedArticle else { return }
-            self.viewModel.updateArticleList(row: indexPath.row, updatedArticle: updatedArticle)
-            DispatchQueue.main.async{
-                self.tableView.reloadRows(at: [indexPath], with: .none)
-            }
-        }
-        coordinatorFlowDelegate?.showDetailScreen(article: selectedArticle, closure: closure)
+//        let closure : ((ArticleList?) -> Void)? = { [weak self] updatedArticle in
+//            guard let self = self, let updatedArticle = updatedArticle else { return }
+//            self.viewModel.updateArticleList(row: indexPath.row, updatedArticle: updatedArticle)
+//            DispatchQueue.main.async{
+//                self.tableView.reloadRows(at: [indexPath], with: .none)
+//            }
+//        }
+//        coordinatorFlowDelegate?.showDetailScreen(article: selectedArticle, closure: closure)
+        
+        let detailsViewController = DetailsViewController()
+        detailsViewController.article = selectedArticle
+        detailsViewController.delegate = self
+        navigationController?.pushViewController(detailsViewController, animated: true)
     }
+}
+
+extension ArticleListController: ArticleListDeleteDelegate {
+    func didDeleteArticle(_ article: ArticleList) {
+      //  self.viewModel.article.removeAll { $0.author == article.author }
+        self.viewModel.filteredList.removeAll { $0.author == article.author }
+        tableView.reloadData()
+    }
+    
+   
 }
 
 

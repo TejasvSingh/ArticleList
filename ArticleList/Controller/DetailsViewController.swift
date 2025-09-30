@@ -6,13 +6,16 @@
 //
 
 import UIKit
-
+protocol ArticleListDeleteDelegate: AnyObject {
+    func didDeleteArticle(_ article: ArticleList)
+}
 class DetailsViewController: UIViewController {
     
     //MARK: Properties
     
     var article: ArticleList?
     var closure: ((ArticleList?) -> Void?)? = nil
+    var delegate: ArticleListDeleteDelegate?
     
     var titleLabel: UILabel = {
         let titleLabel = UILabel()
@@ -57,6 +60,7 @@ class DetailsViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         configureData()
+      // delegate?.didDeleteArticle(article!)
         
     }
     

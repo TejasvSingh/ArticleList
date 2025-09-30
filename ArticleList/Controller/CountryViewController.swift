@@ -92,6 +92,11 @@ class CountryViewController: UIViewController, UITableViewDelegate, UITableViewD
         return cell
     }
 
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let country = viewModel.getCountry(at: indexPath.row)
+        let vc = CountryDetailViewController()
+        navigationController?.pushViewController(vc, animated: true)
+    }
     
 }
+
